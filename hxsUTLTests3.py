@@ -1879,10 +1879,7 @@ class Tests_Paths(haxe_unit_TestCase):
     def testPath3(self):
         dynarr = [1, 2, _hx_AnonObject({'x': 4})]
         result = Sutl()._doPath([_hx_AnonObject({'x': [1, 2, 3]}), _hx_AnonObject({'x': _hx_AnonObject({'y': _hx_AnonObject({'yy': dynarr}), 'z': _hx_AnonObject({'z': _hx_AnonObject({'z': "zz"})})})})],"**")
-        expected = [_hx_AnonObject({'x': [1, 2, 3]}), [1, 2, 3], 1, 2, 3, _hx_AnonObject({'x': _hx_AnonObject({'y': _hx_AnonObject({'yy': dynarr}), 'z': _hx_AnonObject({'z': _hx_AnonObject({'z': "zz"})})})}), _hx_AnonObject({'y': _hx_AnonObject({'yy': dynarr}), 'z': _hx_AnonObject({'z': _hx_AnonObject({'z': "zz"})})}), _hx_AnonObject({'yy': dynarr}), _hx_AnonObject({'z': _hx_AnonObject({'z': "zz"})}), _hx_AnonObject({'z': "zz"}), "zz", dynarr, (dynarr[0] if 0 < len(dynarr) else None), (dynarr[1] if 1 < len(dynarr) else None), (dynarr[2] if 2 < len(dynarr) else None), 4]
-        haxe_Log.trace(expected,_hx_AnonObject({'fileName': "Tests_Paths.hx", 'lineNumber': 124, 'className': "Tests_Paths", 'methodName': "testPath3"}))
-        haxe_Log.trace(result,_hx_AnonObject({'fileName': "Tests_Paths.hx", 'lineNumber': 125, 'className': "Tests_Paths", 'methodName': "testPath3"}))
-        self.assertTrue(Util.deepEqual(expected,result),_hx_AnonObject({'fileName': "Tests_Paths.hx", 'lineNumber': 126, 'className': "Tests_Paths", 'methodName': "testPath3"}))
+        self.assertTrue(Util.deepEqual([_hx_AnonObject({'x': [1, 2, 3]}), [1, 2, 3], 1, 2, 3, _hx_AnonObject({'x': _hx_AnonObject({'y': _hx_AnonObject({'yy': dynarr}), 'z': _hx_AnonObject({'z': _hx_AnonObject({'z': "zz"})})})}), _hx_AnonObject({'y': _hx_AnonObject({'yy': dynarr}), 'z': _hx_AnonObject({'z': _hx_AnonObject({'z': "zz"})})}), _hx_AnonObject({'yy': dynarr}), _hx_AnonObject({'z': _hx_AnonObject({'z': "zz"})}), _hx_AnonObject({'z': "zz"}), "zz", dynarr, (dynarr[0] if 0 < len(dynarr) else None), (dynarr[1] if 1 < len(dynarr) else None), (dynarr[2] if 2 < len(dynarr) else None), 4],result),_hx_AnonObject({'fileName': "Tests_Paths.hx", 'lineNumber': 126, 'className': "Tests_Paths", 'methodName': "testPath3"}))
 
     def testPath4(self):
         dynarr = [1, 2, _hx_AnonObject({'x': 4})]
