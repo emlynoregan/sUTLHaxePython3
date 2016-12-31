@@ -113,7 +113,7 @@ EnumValue._hx_class = EnumValue
 class Reflect:
     _hx_class_name = "Reflect"
     __slots__ = ()
-    _hx_statics = ["field", "isFunction", "compare", "deleteField"]
+    _hx_statics = ["field", "isFunction", "compare", "deleteField", "copy"]
 
     @staticmethod
     def field(o,field):
@@ -153,6 +153,18 @@ class Reflect:
             return False
         o.__delattr__(field)
         return True
+
+    @staticmethod
+    def copy(o):
+        o2 = _hx_AnonObject({})
+        _g = 0
+        _g1 = python_Boot.fields(o)
+        while (_g < len(_g1)):
+            f = (_g1[_g] if _g >= 0 and _g < len(_g1) else None)
+            _g = (_g + 1)
+            value = Reflect.field(o,f)
+            setattr(o2,(("_hx_" + f) if ((f in python_Boot.keywords)) else (("_hx_" + f) if (((((len(f) > 2) and ((ord(f[0]) == 95))) and ((ord(f[1]) == 95))) and ((ord(f[(len(f) - 1)]) != 95)))) else f)),value)
+        return o2
 Reflect._hx_class = Reflect
 
 
@@ -442,17 +454,17 @@ class Sutl:
         return _hx_AnonObject({'x': 1})
 
     def _processPath(self,startfrom,parentscope,scope,l,src,tt,b,h):
-        la = Util.get(scope,"a")
-        lb = Util.get(scope,"b")
-        if Util.get(scope,"notfirst",False):
+        la = Util3.get(scope,"a")
+        lb = Util3.get(scope,"b")
+        if Util3.get(scope,"notfirst",False):
             return self._doPath(la,lb)
         else:
             return self._doPath(self._doPath([startfrom],la),lb)
 
     def _doPath(self,a,b):
         retval = []
-        if Util.isArray(a):
-            if ((b is not None) and (not ((Util.isString(b) and ((Reflect.field(b,"length") == 0)))))):
+        if Util2.isArray(a):
+            if ((b is not None) and (not ((Util2.isString(b) and ((Reflect.field(b,"length") == 0)))))):
                 _g = 0
                 def _hx_local_0():
                     _hx_local_0 = a
@@ -471,16 +483,16 @@ class Sutl:
                             lstack = [lsourceItem]
                             while (len(lstack) > 0):
                                 litem = (None if ((len(lstack) == 0)) else lstack.pop())
-                                if Util.isObject(litem):
+                                if Util2.isObject(litem):
                                     _g2 = 0
-                                    _g3 = python_Boot.fields(litem)
+                                    _g3 = UtilReflect.fields(litem)
                                     while (_g2 < len(_g3)):
                                         lattrib = (_g3[_g2] if _g2 >= 0 and _g2 < len(_g3) else None)
                                         _g2 = (_g2 + 1)
-                                        lelem = Util.get(litem,lattrib)
+                                        lelem = Util3.get(litem,lattrib)
                                         retval.append(lelem)
                                         lstack.append(lelem)
-                                elif Util.isArray(litem):
+                                elif Util2.isArray(litem):
                                     _g21 = 0
                                     def _hx_local_0():
                                         _hx_local_3 = litem
@@ -496,15 +508,15 @@ class Sutl:
                                         retval.append(lelem1)
                                         lstack.append(lelem1)
                         elif (b == "*"):
-                            if Util.isObject(lsourceItem):
+                            if Util2.isObject(lsourceItem):
                                 _g22 = 0
-                                _g32 = python_Boot.fields(lsourceItem)
+                                _g32 = UtilReflect.fields(lsourceItem)
                                 while (_g22 < len(_g32)):
                                     lattrib1 = (_g32[_g22] if _g22 >= 0 and _g22 < len(_g32) else None)
                                     _g22 = (_g22 + 1)
-                                    lelem2 = Util.get(lsourceItem,lattrib1)
+                                    lelem2 = Util3.get(lsourceItem,lattrib1)
                                     retval.append(lelem2)
-                            elif Util.isArray(lsourceItem):
+                            elif Util2.isArray(lsourceItem):
                                 _g23 = 0
                                 def _hx_local_0():
                                     _hx_local_6 = lsourceItem
@@ -518,12 +530,11 @@ class Sutl:
                                     lelem3 = (_g33[_g23] if _g23 >= 0 and _g23 < len(_g33) else None)
                                     _g23 = (_g23 + 1)
                                     retval.append(lelem3)
-                        elif (Util.isObject(lsourceItem) and Util.isString(b)):
-                            field = b
-                            if hasattr(lsourceItem,(("_hx_" + field) if ((field in python_Boot.keywords)) else (("_hx_" + field) if (((((len(field) > 2) and ((ord(field[0]) == 95))) and ((ord(field[1]) == 95))) and ((ord(field[(len(field) - 1)]) != 95)))) else field))):
-                                x = Reflect.field(lsourceItem,b)
+                        elif (Util2.isObject(lsourceItem) and Util2.isString(b)):
+                            if UtilReflect.hasField(lsourceItem,b):
+                                x = UtilReflect.field(lsourceItem,b)
                                 retval.append(x)
-                        elif (Util.isSequence(lsourceItem) and Util.isNumber(b)):
+                        elif (Util2.isSequence(lsourceItem) and Util2.isNumber(b)):
                             arr = Util.SequenceToArray(lsourceItem)
                             if ((b >= 0) and ((b < len(arr)))):
                                 retval.append((arr[b] if b >= 0 and b < len(arr) else None))
@@ -538,73 +549,73 @@ class Sutl:
     def builtins(self):
         _gthis = self
         def _hx_local_0(parentscope,scope,l,src,tt,b,h):
-            a = Util.get(scope,"a",0)
-            bb = Util.get(scope,"b",0)
+            a = Util3.get(scope,"a",0)
+            bb = Util3.get(scope,"b",0)
             if (Util.gettype(a) == Util.gettype(bb)):
                 return (a + bb)
             else:
                 return None
         def _hx_local_1(parentscope1,scope1,l1,src1,tt1,b1,h1):
-            return (Util.get(scope1,"a",0) - Util.get(scope1,"b",0))
+            return (Util3.get(scope1,"a",0) - Util3.get(scope1,"b",0))
         def _hx_local_2(parentscope2,scope2,l2,src2,tt2,b2,h2):
-            return (Util.get(scope2,"a",1) * Util.get(scope2,"b",1))
+            return (Util3.get(scope2,"a",1) * Util3.get(scope2,"b",1))
         def _hx_local_3(parentscope3,scope3,l3,src3,tt3,b3,h3):
-            return (Util.get(scope3,"a",1) / Util.get(scope3,"b",1))
+            return (Util3.get(scope3,"a",1) / Util3.get(scope3,"b",1))
         def _hx_local_4(parentscope4,scope4,l4,src4,tt4,b4,h4):
-            a1 = Util.get(scope4,"a",None)
-            b5 = Util.get(scope4,"b",None)
+            a1 = Util3.get(scope4,"a",None)
+            b5 = Util3.get(scope4,"b",None)
             if (Util.gettype(a1) == Util.gettype(b5)):
                 return HxOverrides.eq(a1,b5)
             else:
                 return False
         def _hx_local_5(parentscope5,scope5,l5,src5,tt5,b6,h5):
-            a2 = Util.get(scope5,"a",None)
-            b7 = Util.get(scope5,"b",None)
+            a2 = Util3.get(scope5,"a",None)
+            b7 = Util3.get(scope5,"b",None)
             return (not (((Util.gettype(a2) == Util.gettype(b7)) and (HxOverrides.eq(a2,b7)))))
         def _hx_local_6(parentscope6,scope6,l6,src6,tt6,b8,h6):
-            return (Util.get(scope6,"a",None) >= Util.get(scope6,"b",None))
+            return (Util3.get(scope6,"a",None) >= Util3.get(scope6,"b",None))
         def _hx_local_7(parentscope7,scope7,l7,src7,tt7,b9,h7):
-            return (Util.get(scope7,"a",None) <= Util.get(scope7,"b",None))
+            return (Util3.get(scope7,"a",None) <= Util3.get(scope7,"b",None))
         def _hx_local_8(parentscope8,scope8,l8,src8,tt8,b10,h8):
-            return (Util.get(scope8,"a",None) > Util.get(scope8,"b",None))
+            return (Util3.get(scope8,"a",None) > Util3.get(scope8,"b",None))
         def _hx_local_9(parentscope9,scope9,l9,src9,tt9,b11,h9):
-            return (Util.get(scope9,"a",None) < Util.get(scope9,"b",None))
+            return (Util3.get(scope9,"a",None) < Util3.get(scope9,"b",None))
         def _hx_local_10(parentscope10,scope10,l10,src10,tt10,b12,h10):
-            if hasattr(scope10,(("_hx_" + "a") if (("a" in python_Boot.keywords)) else (("_hx_" + "a") if (((((len("a") > 2) and ((ord("a"[0]) == 95))) and ((ord("a"[1]) == 95))) and ((ord("a"[(len("a") - 1)]) != 95)))) else "a"))):
-                if hasattr(scope10,(("_hx_" + "b") if (("b" in python_Boot.keywords)) else (("_hx_" + "b") if (((((len("b") > 2) and ((ord("b"[0]) == 95))) and ((ord("b"[1]) == 95))) and ((ord("b"[(len("b") - 1)]) != 95)))) else "b"))):
-                    if Util.isTruthy(Util.get(scope10,"a",False)):
-                        return Util.isTruthy(Util.get(scope10,"b",False))
+            if UtilReflect.hasField(scope10,"a"):
+                if UtilReflect.hasField(scope10,"b"):
+                    if Util3.isTruthy(Util3.get(scope10,"a",False)):
+                        return Util3.isTruthy(Util3.get(scope10,"b",False))
                     else:
                         return False
                 else:
-                    return Util.isTruthy(Util.get(scope10,"a",False))
+                    return Util3.isTruthy(Util3.get(scope10,"a",False))
             else:
-                return Util.isTruthy(Util.get(scope10,"b",False))
+                return Util3.isTruthy(Util3.get(scope10,"b",False))
         def _hx_local_11(parentscope11,scope11,l11,src11,tt11,b13,h11):
-            if (not Util.isTruthy(Util.get(scope11,"a",False))):
-                return Util.isTruthy(Util.get(scope11,"b",False))
+            if (not Util3.isTruthy(Util3.get(scope11,"a",False))):
+                return Util3.isTruthy(Util3.get(scope11,"b",False))
             else:
                 return True
         def _hx_local_12(parentscope12,scope12,l12,src12,tt12,b14,h12):
-            return (not Util.isTruthy(Util.get(scope12,"b",False)))
+            return (not Util3.isTruthy(Util3.get(scope12,"b",False)))
         def _hx_local_13(parentscope13,scope13,l13,src13,tt13,b15,h13):
             retval = None
             condvalue = False
-            if hasattr(scope13,(("_hx_" + "cond") if (("cond" in python_Boot.keywords)) else (("_hx_" + "cond") if (((((len("cond") > 2) and ((ord("cond"[0]) == 95))) and ((ord("cond"[1]) == 95))) and ((ord("cond"[(len("cond") - 1)]) != 95)))) else "cond"))):
-                condvalue1 = Util.get(scope13,"cond")
-                condvalue = Util.isTruthy(_gthis._evaluate(parentscope13,condvalue1,l13,src13,tt13,b15,h13))
+            if UtilReflect.hasField(scope13,"cond"):
+                condvalue1 = Util3.get(scope13,"cond")
+                condvalue = Util3.isTruthy(_gthis._evaluate(parentscope13,condvalue1,l13,src13,tt13,b15,h13))
             if condvalue:
-                if hasattr(scope13,(("_hx_" + "true") if (("true" in python_Boot.keywords)) else (("_hx_" + "true") if (((((len("true") > 2) and ((ord("true"[0]) == 95))) and ((ord("true"[1]) == 95))) and ((ord("true"[(len("true") - 1)]) != 95)))) else "true"))):
-                    retval1 = Util.get(scope13,"true")
+                if UtilReflect.hasField(scope13,"true"):
+                    retval1 = Util3.get(scope13,"true")
                     retval = _gthis._evaluate(parentscope13,retval1,l13,src13,tt13,b15,h13)
-            elif hasattr(scope13,(("_hx_" + "false") if (("false" in python_Boot.keywords)) else (("_hx_" + "false") if (((((len("false") > 2) and ((ord("false"[0]) == 95))) and ((ord("false"[1]) == 95))) and ((ord("false"[(len("false") - 1)]) != 95)))) else "false"))):
-                retval2 = Util.get(scope13,"false")
+            elif UtilReflect.hasField(scope13,"false"):
+                retval2 = Util3.get(scope13,"false")
                 retval = _gthis._evaluate(parentscope13,retval2,l13,src13,tt13,b15,h13)
             return retval
         def _hx_local_15(parentscope14,scope14,l14,src14,tt14,b16,h14):
-            obj = Util.get(scope14,"map")
-            if Util.isObject(obj):
-                retval3 = python_Boot.fields(obj)
+            obj = Util3.get(scope14,"map")
+            if Util2.isObject(obj):
+                retval3 = UtilReflect.fields(obj)
                 def _hx_local_14(a3,b17):
                     return Reflect.compare(a3,b17)
                 retval3.sort(key= python_lib_Functools.cmp_to_key(_hx_local_14))
@@ -612,31 +623,31 @@ class Sutl:
             else:
                 return None
         def _hx_local_19(parentscope15,scope15,l15,src15,tt15,b18,h15):
-            obj1 = Util.get(scope15,"map")
-            if Util.isObject(obj1):
-                keys = python_Boot.fields(obj1)
+            obj1 = Util3.get(scope15,"map")
+            if Util2.isObject(obj1):
+                keys = UtilReflect.fields(obj1)
                 def _hx_local_16(a4,b19):
                     return Reflect.compare(a4,b19)
                 Reflect.field(keys,"sort")(_hx_local_16)
                 def _hx_local_18():
                     def _hx_local_17(key):
-                        return Util.get(obj1,key)
+                        return Util3.get(obj1,key)
                     return Reflect.field(keys,"map")(_hx_local_17)
                 return _hx_local_18()
             else:
                 return None
         def _hx_local_20(parentscope16,scope16,l16,src16,tt16,b20,h16):
-            item = Util.get(scope16,"list",Util.get(scope16,"value"))
-            if Util.isSequence(item):
+            item = Util3.get(scope16,"list",Util3.get(scope16,"value"))
+            if Util2.isSequence(item):
                 return len(Util.SequenceToArray(item))
             else:
                 return 0
         def _hx_local_21(parentscope17,scope17,l17,src17,tt17,b21,h17):
-            return Util.gettype(Util.get(scope17,"value"))
+            return Util.gettype(Util3.get(scope17,"value"))
         def _hx_local_24(parentscope18,scope18,l18,src18,tt18,b22,h18):
             retval4 = _hx_AnonObject({})
-            arr = Util.get(scope18,"value")
-            if Util.isArray(arr):
+            arr = Util3.get(scope18,"value")
+            if Util2.isArray(arr):
                 _g = 0
                 def _hx_local_0():
                     _hx_local_22 = arr
@@ -649,29 +660,27 @@ class Sutl:
                 while (_g < len(_g1)):
                     entry = (_g1[_g] if _g >= 0 and _g < len(_g1) else None)
                     _g = (_g + 1)
-                    if ((Util.isArray(entry) and ((Reflect.field(entry,"length") >= 2))) and Util.isString(HxOverrides.arrayGet(entry, 0))):
-                        field = HxOverrides.arrayGet(entry, 0)
-                        setattr(retval4,(("_hx_" + field) if ((field in python_Boot.keywords)) else (("_hx_" + field) if (((((len(field) > 2) and ((ord(field[0]) == 95))) and ((ord(field[1]) == 95))) and ((ord(field[(len(field) - 1)]) != 95)))) else field)),HxOverrides.arrayGet(entry, 1))
+                    if ((Util2.isArray(entry) and ((Reflect.field(entry,"length") >= 2))) and Util2.isString(HxOverrides.arrayGet(entry, 0))):
+                        UtilReflect.setField(retval4,HxOverrides.arrayGet(entry, 0),HxOverrides.arrayGet(entry, 1))
             return retval4
         def _hx_local_25(parentscope19,scope19,l19,src19,tt19,b23,h19):
-            listobj = Util.get(scope19,"list")
-            t = Util.get(scope19,"t")
-            accum = Util.get(scope19,"accum")
-            if Util.isSequence(listobj):
+            listobj = Util3.get(scope19,"list")
+            t = Util3.get(scope19,"t")
+            accum = Util3.get(scope19,"accum")
+            if Util2.isSequence(listobj):
                 _hx_list = Util.SequenceToArray(listobj)
+                s2 = _hx_AnonObject({})
+                if Util2.isObject(parentscope19):
+                    s2 = Util.shallowCopy(parentscope19)
+                Util.addObject(s2,scope19)
                 _g11 = 0
                 _g2 = len(_hx_list)
                 while (_g11 < _g2):
                     ix = _g11
                     _g11 = (_g11 + 1)
-                    item1 = (_hx_list[ix] if ix >= 0 and ix < len(_hx_list) else None)
-                    s2 = _hx_AnonObject({})
-                    if Util.isObject(parentscope19):
-                        s2 = Util.shallowCopy(parentscope19)
-                    Util.addObject(s2,scope19)
-                    setattr(s2,(("_hx_" + "item") if (("item" in python_Boot.keywords)) else (("_hx_" + "item") if (((((len("item") > 2) and ((ord("item"[0]) == 95))) and ((ord("item"[1]) == 95))) and ((ord("item"[(len("item") - 1)]) != 95)))) else "item")),item1)
-                    setattr(s2,(("_hx_" + "accum") if (("accum" in python_Boot.keywords)) else (("_hx_" + "accum") if (((((len("accum") > 2) and ((ord("accum"[0]) == 95))) and ((ord("accum"[1]) == 95))) and ((ord("accum"[(len("accum") - 1)]) != 95)))) else "accum")),accum)
-                    setattr(s2,(("_hx_" + "ix") if (("ix" in python_Boot.keywords)) else (("_hx_" + "ix") if (((((len("ix") > 2) and ((ord("ix"[0]) == 95))) and ((ord("ix"[1]) == 95))) and ((ord("ix"[(len("ix") - 1)]) != 95)))) else "ix")),item1)
+                    UtilReflect.setField(s2,"item",(_hx_list[ix] if ix >= 0 and ix < len(_hx_list) else None))
+                    UtilReflect.setField(s2,"accum",accum)
+                    UtilReflect.setField(s2,"ix",ix)
                     accum = _gthis._evaluate(s2,t,l19,src19,tt19,b23,h19)
             return accum
         def _hx_local_26(parentscope20,scope20,l20,src20,tt20,b24,h20):
@@ -683,17 +692,17 @@ class Sutl:
         def _hx_local_29(parentscope23,scope23,l23,src23,tt23,b27,h23):
             return _gthis._processPath(tt23,parentscope23,scope23,l23,src23,tt23,b27,h23)
         def _hx_local_30(parentscope24,scope24,l24,src24,tt24,b28,h24):
-            la = Util.get(scope24,"a")
-            lb = Util.get(scope24,"b")
-            if Util.get(scope24,"notfirst"):
+            la = Util3.get(scope24,"a")
+            lb = Util3.get(scope24,"b")
+            if Util3.get(scope24,"notfirst"):
                 return _gthis._doPath(la,lb)
             elif (la is None):
                 return _gthis._doPath([lb],None)
             else:
                 return _gthis._doPath([la],lb)
         def _hx_local_31(parentscope25,scope25,l25,src25,tt25,b29,h25):
-            lb1 = Util.get(scope25,"b")
-            if Util.isSequence(lb1):
+            lb1 = Util3.get(scope25,"b")
+            if Util2.isSequence(lb1):
                 arr1 = Util.SequenceToArray(lb1)
                 if (len(arr1) > 0):
                     return (arr1[0] if 0 < len(arr1) else None)
@@ -702,8 +711,8 @@ class Sutl:
             else:
                 return None
         def _hx_local_32(parentscope26,scope26,l26,src26,tt26,b30,h26):
-            lb2 = Util.get(scope26,"b")
-            if Util.isSequence(lb2):
+            lb2 = Util3.get(scope26,"b")
+            if Util2.isSequence(lb2):
                 arr2 = Util.SequenceToArray(lb2)
                 if (len(arr2) > 0):
                     return arr2[1:None]
@@ -712,13 +721,13 @@ class Sutl:
             else:
                 return None
         def _hx_local_34(parentscope27,scope27,l27,src27,tt27,b31,h27):
-            lvalue = Util.get(scope27,"value")
-            lsep = Util.get(scope27,"sep",",")
-            lmax = Util.get(scope27,"max")
+            lvalue = Util3.get(scope27,"value")
+            lsep = Util3.get(scope27,"sep",",")
+            lmax = Util3.get(scope27,"max")
             retval5 = None
-            if (not ((not Util.isString(lvalue)))):
-                if (not ((not ((Util.isTruthy(lsep) and Util.isString(lsep)))))):
-                    if (not ((not ((Util.isNumber(lmax) or ((lmax is None))))))):
+            if (not ((not Util2.isString(lvalue)))):
+                if (not ((not ((Util3.isTruthy(lsep) and Util2.isString(lsep)))))):
+                    if (not ((not ((Util2.isNumber(lmax) or ((lmax is None))))))):
                         retval5 = lvalue.split(lsep)
                         def _hx_local_0():
                             _hx_local_33 = lvalue
@@ -734,17 +743,17 @@ class Sutl:
                             retval5 = lresult1
             return retval5
         def _hx_local_35(parentscope28,scope28,l28,src28,tt28,b32,h28):
-            lvalue1 = Util.get(scope28,"value")
+            lvalue1 = Util3.get(scope28,"value")
             retval6 = None
-            if (not ((not Util.isString(lvalue1)))):
+            if (not ((not Util2.isString(lvalue1)))):
                 retval6 = StringTools.trim(lvalue1)
             return retval6
         def _hx_local_37(parentscope29,scope29,l29,src29,tt29,b33,h29):
-            lvalue2 = Util.get(scope29,"value")
-            lsub = Util.get(scope29,"sub")
+            lvalue2 = Util3.get(scope29,"value")
+            lsub = Util3.get(scope29,"sub")
             retval7 = None
-            if (not ((not Util.isString(lvalue2)))):
-                if (not ((not ((Util.isTruthy(lsub) and Util.isString(lsub)))))):
+            if (not ((not Util2.isString(lvalue2)))):
+                if (not ((not ((Util3.isTruthy(lsub) and Util2.isString(lsub)))))):
                     def _hx_local_0():
                         _hx_local_36 = lvalue2
                         if Std._hx_is(_hx_local_36,str):
@@ -756,14 +765,13 @@ class Sutl:
             return retval7
         functions = _hx_AnonObject({'+': _hx_local_0, '-': _hx_local_1, 'x': _hx_local_2, '/': _hx_local_3, '=': _hx_local_4, '!=': _hx_local_5, '>=': _hx_local_6, '<=': _hx_local_7, '>': _hx_local_8, '<': _hx_local_9, '&&': _hx_local_10, '||': _hx_local_11, '!': _hx_local_12, '_hx_if': _hx_local_13, 'keys': _hx_local_15, 'values': _hx_local_19, 'len': _hx_local_20, 'type': _hx_local_21, 'makemap': _hx_local_24, 'reduce': _hx_local_25, '$': _hx_local_26, '@': _hx_local_27, '*': _hx_local_28, '~': _hx_local_29, '%': _hx_local_30, 'head': _hx_local_31, 'tail': _hx_local_32, 'split': _hx_local_34, 'trim': _hx_local_35, 'pos': _hx_local_37})
         _g3 = 0
-        _g12 = python_Boot.fields(functions)
+        _g12 = UtilReflect.fields(functions)
         while (_g3 < len(_g12)):
             fieldname = (_g12[_g3] if _g3 >= 0 and _g3 < len(_g12) else None)
             _g3 = (_g3 + 1)
-            field1 = ("has" + ("null" if fieldname is None else fieldname))
             def _hx_local_39(parentscope30,scope30,l30,src30,tt30,b34,h30):
                 return True
-            setattr(functions,(("_hx_" + field1) if ((field1 in python_Boot.keywords)) else (("_hx_" + field1) if (((((len(field1) > 2) and ((ord(field1[0]) == 95))) and ((ord(field1[1]) == 95))) and ((ord(field1[(len(field1) - 1)]) != 95)))) else field1)),_hx_local_39)
+            UtilReflect.setField(functions,("has" + Std.string(fieldname)),_hx_local_39)
         return functions
 
     def logenter(self,msg,s,t,h):
@@ -786,30 +794,30 @@ class Sutl:
         return (x - 1)
 
     def _evaluate(self,s,t,l,src,tt,b,h):
-        if (not Util.isTruthy(h)):
-            h = 0
         r = None
         self.logenter("_evaluate",s,t,h)
-        if Util.isEval(t):
-            r = self._evaluateEval(s,t,l,src,tt,b,self.dec(h))
-        elif Util.isEval2(t):
-            r = self._evaluateEval2(s,t,l,src,tt,b,self.dec(h))
-        elif Util.isBuiltinEval(t):
-            r = self._evaluateBuiltin(s,t,l,src,tt,b,self.dec(h))
-        elif Util.isQuoteEval(t):
-            r = self._quoteEvaluate(s,Util.get(t,"'"),l,src,tt,b,self.dec(h))
-        elif Util.isColonEval(t):
-            r = Util.get(t,":")
-        elif Util.isDictTransform(t):
-            r = self._evaluateDict(s,t,l,src,tt,b,self.dec(h))
-        elif Util.isArrayBuiltinEval(t,b):
-            r = self._evaluateArrayBuiltin(s,t,l,src,tt,b,self.dec(h))
-        elif Util.isListTransform(t):
-            tlist = Util.SequenceToArray(t)
-            if ((len(tlist) > 0) and (((tlist[0] if 0 < len(tlist) else None) == "&&"))):
-                r = Util.flatten(self._evaluateList(s,tlist[1:None],l,src,tt,b,self.dec(h)))
-            else:
-                r = self._evaluateList(s,t,l,src,tt,b,self.dec(h))
+        if Util2.isObject(t):
+            if Util3.isEval(t):
+                r = self._evaluateEval(True,s,t,l,src,tt,b,self.dec(h))
+            elif Util3.isEval2(t):
+                r = self._evaluateEval2(s,t,l,src,tt,b,self.dec(h))
+            elif Util3.isBuiltinEval(t):
+                r = self._evaluateBuiltin(s,t,l,src,tt,b,self.dec(h))
+            elif Util3.isQuoteEval(t):
+                r = self._quoteEvaluate(s,Util3.get(t,"'"),l,src,tt,b,self.dec(h))
+            elif Util3.isColonEval(t):
+                r = Util3.get(t,":")
+            elif Util3.isDictTransform(t):
+                r = self._evaluateDict(s,t,l,src,tt,b,self.dec(h),False)
+        elif Util2.isArray(t):
+            if Util.isArrayBuiltinEval(t,b):
+                r = self._evaluateArrayBuiltin(s,t,l,src,tt,b,self.dec(h))
+            elif Util3.isListTransform(t):
+                tlist = Util.SequenceToArray(t)
+                if ((len(tlist) > 0) and (((tlist[0] if 0 < len(tlist) else None) == "&&"))):
+                    r = Util.flatten(self._evaluateList(s,tlist[1:None],l,src,tt,b,self.dec(h)))
+                else:
+                    r = self._evaluateList(s,t,l,src,tt,b,self.dec(h))
         elif Util.isStringBuiltinEval(t,b):
             r = self._evaluateStringBuiltin(s,t,l,src,tt,b,self.dec(h))
         else:
@@ -820,11 +828,11 @@ class Sutl:
     def _quoteEvaluate(self,s,t,l,src,tt,b,h):
         self.logenter("_quoteEvaluate",s,t,h)
         r = None
-        if Util.isDoubleQuoteEval(t):
-            r = self._evaluate(s,Util.get(t,"''"),l,src,tt,b,self.dec(h))
-        elif Util.isDictTransform(t):
+        if Util3.isDoubleQuoteEval(t):
+            r = self._evaluate(s,Util3.get(t,"''"),l,src,tt,b,self.dec(h))
+        elif Util3.isDictTransform(t):
             r = self._quoteEvaluateDict(s,t,l,src,tt,b,self.dec(h))
-        elif Util.isListTransform(t):
+        elif Util3.isListTransform(t):
             r = self._quoteEvaluateList(s,t,l,src,tt,b,self.dec(h))
         else:
             r = t
@@ -877,7 +885,7 @@ class Sutl:
                     raise _HxException("Class cast error")
                 return _hx_local_1
             lop = _hx_local_0()
-        if Util.isTruthy(lop):
+        if (len(lop) > 0):
             lopChar = ("" if ((0 >= len(lop))) else lop[0])
             retval = self._evaluateBuiltin(s,_hx_AnonObject({'&': Util.getArrayBuiltinName(lop), 'args': arrt[1:None], 'head': (lopChar == "^")}),l,src,tt,b,self.dec(h))
         return retval
@@ -885,9 +893,9 @@ class Sutl:
     def _evaluateBuiltin(self,s,t,l,src,tt,b,h):
         self.logenter("_evaluateBuiltin",s,t,h)
         retval = None
-        if hasattr(t,(("_hx_" + "args") if (("args" in python_Boot.keywords)) else (("_hx_" + "args") if (((((len("args") > 2) and ((ord("args"[0]) == 95))) and ((ord("args"[1]) == 95))) and ((ord("args"[(len("args") - 1)]) != 95)))) else "args"))):
-            args = Util.get(t,"args")
-            builtinname = self._evaluate(s,Util.get(t,"&"),l,src,tt,b,self.dec(h))
+        if UtilReflect.hasField(t,"args"):
+            args = Util3.get(t,"args")
+            builtinname = self._evaluate(s,Util3.get(t,"&"),l,src,tt,b,self.dec(h))
             if (len(args) == 0):
                 retval = self._evaluateBuiltinSimple(False,s,_hx_AnonObject({'&': builtinname}),l,src,tt,b,self.dec(h))
             elif (len(args) == 1):
@@ -909,7 +917,7 @@ class Sutl:
                     _g = (_g + 1)
                     retval = self._evaluateBuiltinSimple(False,s,_hx_AnonObject({'&': builtinname, 'a': retval, 'b': item, 'notfirst': notfirst}),l,src,tt,b,self.dec(h))
                     notfirst = True
-            if (Util.isArray(retval) and Util.isTruthy(Util.get(t,"head"))):
+            if (Util2.isArray(retval) and Util3.isTruthy(Util3.get(t,"head"))):
                 def _hx_local_0():
                     _hx_local_2 = retval
                     if Std._hx_is(_hx_local_2,list):
@@ -929,95 +937,97 @@ class Sutl:
 
     def _evaluateBuiltinSimple(self,needseval,s,t,l,src,tt,b,h):
         retval = None
-        builtinf = Util.get(b,Util.get(t,"&"))
+        builtinf = Util3.get(b,Util3.get(t,"&"))
         llibname = None
         if builtinf:
-            llibname = ("_override_" + Std.string(Util.get(t,"&")))
+            llibname = ("_override_" + Std.string(Util3.get(t,"&")))
         else:
-            llibname = Util.get(t,"&")
-        if (Util.isObject(l) and hasattr(l,(("_hx_" + llibname) if ((llibname in python_Boot.keywords)) else (("_hx_" + llibname) if (((((len(llibname) > 2) and ((ord(llibname[0]) == 95))) and ((ord(llibname[1]) == 95))) and ((ord(llibname[(len(llibname) - 1)]) != 95)))) else llibname)))):
+            llibname = Util3.get(t,"&")
+        if (Util2.isObject(l) and UtilReflect.hasField(l,llibname)):
             t2 = Util.shallowCopy(t)
-            value = ["^*", Util.get(t,"&")]
-            setattr(t2,(("_hx_" + "!") if (("!" in python_Boot.keywords)) else (("_hx_" + "!") if (((((len("!") > 2) and ((ord("!"[0]) == 95))) and ((ord("!"[1]) == 95))) and ((ord("!"[(len("!") - 1)]) != 95)))) else "!")),value)
-            Reflect.deleteField(t2,"&")
-            retval = self._evaluateEval(s,t2,l,src,tt,b,self.dec(h))
+            UtilReflect.setField(t2,"!",["^*", Util3.get(t,"&")])
+            UtilReflect.deleteField(t2,"&")
+            retval = self._evaluateEval(needseval,s,t2,l,src,tt,b,self.dec(h))
         elif (builtinf is not None):
-            s2 = Util.shallowCopy(s)
             sX = None
             if needseval:
-                sX = self._evaluateDict(s,t,l,src,tt,b,self.dec(h))
+                sX = self._evaluateDict(s,t,l,src,tt,b,self.dec(h),True)
             else:
                 sX = t
-            if Util.isObject(s2):
+            s2 = None
+            if Util2.isObject(s):
+                s2 = Util.shallowCopy(s)
                 Util.addObject(s2,sX)
             else:
                 s2 = sX
             l2 = l
-            if hasattr(t,(("_hx_" + "*") if (("*" in python_Boot.keywords)) else (("_hx_" + "*") if (((((len("*") > 2) and ((ord("*"[0]) == 95))) and ((ord("*"[1]) == 95))) and ((ord("*"[(len("*") - 1)]) != 95)))) else "*"))):
-                l2 = self._evaluateDict(s,Util.get(t,"*"),l,src,tt,b,self.dec(h))
+            if UtilReflect.hasField(t,"*"):
+                l2 = self._evaluateDict(s,Util3.get(t,"*"),l,src,tt,b,self.dec(h),False)
             retval = builtinf(s,s2,l2,src,tt,b,self.dec(h))
         return retval
 
-    def _evaluateEval(self,s,t,l,src,tt,b,h):
+    def _evaluateEval(self,needseval,s,t,l,src,tt,b,h):
         self.logenter("_evaluateEval",s,t,h)
-        teval = self._evaluateDict(s,t,l,src,tt,b,h)
-        t2 = Util.get(teval,"!")
+        teval = None
+        if needseval:
+            teval = self._evaluateDict(s,t,l,src,tt,b,h,False)
+        else:
+            teval = t
+        t2 = Util3.get(teval,"!")
         s2 = _hx_AnonObject({})
-        if Util.isObject(s):
+        if Util2.isObject(s):
             s2 = Util.shallowCopy(s)
         Util.addObject(s2,teval)
         l2 = l
-        if hasattr(t,(("_hx_" + "*") if (("*" in python_Boot.keywords)) else (("_hx_" + "*") if (((((len("*") > 2) and ((ord("*"[0]) == 95))) and ((ord("*"[1]) == 95))) and ((ord("*"[(len("*") - 1)]) != 95)))) else "*"))):
-            l2 = self._evaluate(s,Util.get(t,"*"),l,src,tt,b,h)
+        if UtilReflect.hasField(t,"*"):
+            l2 = self._evaluate(s,Util3.get(t,"*"),l,src,tt,b,h)
         r = self._evaluate(s2,t2,l2,src,tt,b,h)
         self.logexit("_evaluateEval",r,h)
         return r
 
     def _evaluateEval2(self,s,t,l,src,tt,b,h):
         self.logenter("_evaluateEval2",s,t,h)
-        t2 = self._evaluate(s,Util.get(t,"!!"),l,src,tt,b,h)
+        t2 = self._evaluate(s,Util3.get(t,"!!"),l,src,tt,b,h)
         s2 = s
-        if hasattr(t,(("_hx_" + "s") if (("s" in python_Boot.keywords)) else (("_hx_" + "s") if (((((len("s") > 2) and ((ord("s"[0]) == 95))) and ((ord("s"[1]) == 95))) and ((ord("s"[(len("s") - 1)]) != 95)))) else "s"))):
-            ts = self._evaluate(s,Util.get(t,"s"),l,src,tt,b,h)
-            if Util.isObject(ts):
+        if UtilReflect.hasField(t,"s"):
+            ts = self._evaluate(s,Util3.get(t,"s"),l,src,tt,b,h)
+            if Util2.isObject(ts):
                 s2 = _hx_AnonObject({})
-                if Util.isObject(s):
+                if Util2.isObject(s):
                     s2 = Util.shallowCopy(s)
                 Util.addObject(s2,t2)
             else:
                 s2 = ts
         l2 = l
-        if hasattr(t,(("_hx_" + "*") if (("*" in python_Boot.keywords)) else (("_hx_" + "*") if (((((len("*") > 2) and ((ord("*"[0]) == 95))) and ((ord("*"[1]) == 95))) and ((ord("*"[(len("*") - 1)]) != 95)))) else "*"))):
-            l2 = self._evaluate(s,Util.get(t,"*"),l,src,tt,b,h)
+        if UtilReflect.hasField(t,"*"):
+            l2 = self._evaluate(s,Util3.get(t,"*"),l,src,tt,b,h)
         r = self._evaluate(s2,t2,l2,src,tt,b,h)
         self.logexit("_evaluateEval",r,h)
         return r
 
-    def _evaluateDict(self,s,t,l,src,tt,b,h):
+    def _evaluateDict(self,s,t,l,src,tt,b,h,skipAmp):
         self.logenter("_evaluateDict",s,t,h)
-        retval = self._doevaluateDict(False,s,t,l,src,tt,b,self.dec(h))
+        retval = self._doevaluateDict(False,s,t,l,src,tt,b,self.dec(h),skipAmp)
         self.logexit("_evaluateDict",retval,h)
         return retval
 
     def _quoteEvaluateDict(self,s,t,l,src,tt,b,h):
         self.logenter("_quoteEvaluateDict",s,t,h)
-        retval = self._doevaluateDict(True,s,t,l,src,tt,b,self.dec(h))
+        retval = self._doevaluateDict(True,s,t,l,src,tt,b,self.dec(h),False)
         self.logexit("_quoteEvaluateDict",retval,h)
         return retval
 
-    def _doevaluateDict(self,usequoteform,s,t,l,src,tt,b,h):
+    def _doevaluateDict(self,usequoteform,s,t,l,src,tt,b,h,skipAmp):
         retval = _hx_AnonObject({})
         _g = 0
-        _g1 = python_Boot.fields(t)
+        _g1 = UtilReflect.fields(t)
         while (_g < len(_g1)):
             key = (_g1[_g] if _g >= 0 and _g < len(_g1) else None)
             _g = (_g + 1)
             if usequoteform:
-                value = self._quoteEvaluate(s,Util.get(t,key),l,src,tt,b,h)
-                setattr(retval,(("_hx_" + key) if ((key in python_Boot.keywords)) else (("_hx_" + key) if (((((len(key) > 2) and ((ord(key[0]) == 95))) and ((ord(key[1]) == 95))) and ((ord(key[(len(key) - 1)]) != 95)))) else key)),value)
-            else:
-                value1 = self._evaluate(s,Util.get(t,key),l,src,tt,b,h)
-                setattr(retval,(("_hx_" + key) if ((key in python_Boot.keywords)) else (("_hx_" + key) if (((((len(key) > 2) and ((ord(key[0]) == 95))) and ((ord(key[1]) == 95))) and ((ord(key[(len(key) - 1)]) != 95)))) else key)),value1)
+                UtilReflect.setField(retval,key,self._quoteEvaluate(s,Util3.get(t,key),l,src,tt,b,h))
+            elif (key != "&"):
+                UtilReflect.setField(retval,key,self._evaluate(s,Util3.get(t,key),l,src,tt,b,h))
         return retval
 
     def _evaluateList(self,s,t,l,src,tt,b,h):
@@ -1033,25 +1043,19 @@ class Sutl:
         return retval
 
     def _doevaluateList(self,usequoteform,s,t,l,src,tt,b,h):
-        retval = []
-        def _hx_local_0():
-            _hx_local_0 = t
-            if Std._hx_is(_hx_local_0,list):
-                _hx_local_0
-            else:
-                raise _HxException("Class cast error")
-            return _hx_local_0
-        tarr = _hx_local_0()
-        _g = 0
-        while (_g < len(tarr)):
-            elem = (tarr[_g] if _g >= 0 and _g < len(tarr) else None)
-            _g = (_g + 1)
+        tarr = Util.SequenceToArray(t)
+        retval = list(tarr)
+        _g1 = 0
+        _g = len(tarr)
+        while (_g1 < _g):
+            ix = _g1
+            _g1 = (_g1 + 1)
+            elem = (tarr[ix] if ix >= 0 and ix < len(tarr) else None)
             if usequoteform:
-                x = self._quoteEvaluate(s,elem,l,src,tt,b,h)
-                retval.append(x)
+                elem = self._quoteEvaluate(s,elem,l,src,tt,b,h)
             else:
-                x1 = self._evaluate(s,elem,l,src,tt,b,h)
-                retval.append(x1)
+                elem = self._evaluate(s,elem,l,src,tt,b,h)
+            python_internal_ArrayImpl._set(retval, ix, elem)
         return retval
 
     def compilelib(self,decls,dists):
@@ -1060,17 +1064,17 @@ class Sutl:
 
     def _compilelib(self,decls,dists,l,b):
         resultlib = _hx_AnonObject({})
-        if Util.isObject(l):
+        if Util2.isObject(l):
             resultlib = Util.shallowCopy(l)
         all_candidate_decls = _hx_AnonObject({})
         _g = 0
         while (_g < len(decls)):
             decl = (decls[_g] if _g >= 0 and _g < len(decls) else None)
             _g = (_g + 1)
-            declname = Util.get(decl,"name","")
-            if (hasattr(decl,(("_hx_" + "requires") if (("requires" in python_Boot.keywords)) else (("_hx_" + "requires") if (((((len("requires") > 2) and ((ord("requires"[0]) == 95))) and ((ord("requires"[1]) == 95))) and ((ord("requires"[(len("requires") - 1)]) != 95)))) else "requires"))) and Util.isArray(Util.get(decl,"requires"))):
+            declname = Util3.get(decl,"name","")
+            if (UtilReflect.hasField(decl,"requires") and Util2.isArray(Util3.get(decl,"requires"))):
                 def _hx_local_0():
-                    _hx_local_1 = Util.get(decl,"requires")
+                    _hx_local_1 = Util3.get(decl,"requires")
                     if Std._hx_is(_hx_local_1,list):
                         _hx_local_1
                     else:
@@ -1081,21 +1085,17 @@ class Sutl:
                 while (_g1 < len(reqnames)):
                     reqname = (reqnames[_g1] if _g1 >= 0 and _g1 < len(reqnames) else None)
                     _g1 = (_g1 + 1)
-                    field = reqname
-                    if (not hasattr(l,(("_hx_" + field) if ((field in python_Boot.keywords)) else (("_hx_" + field) if (((((len(field) > 2) and ((ord(field[0]) == 95))) and ((ord(field[1]) == 95))) and ((ord(field[(len(field) - 1)]) != 95)))) else field)))):
-                        if Util.isPrefix(reqname,declname):
-                            field1 = reqname
-                            value = Util.get(decl,"transform-t")
-                            setattr(resultlib,(("_hx_" + field1) if ((field1 in python_Boot.keywords)) else (("_hx_" + field1) if (((((len(field1) > 2) and ((ord(field1[0]) == 95))) and ((ord(field1[1]) == 95))) and ((ord(field1[(len(field1) - 1)]) != 95)))) else field1)),value)
+                    if (not UtilReflect.hasField(l,reqname)):
+                        if Util3.isPrefix(reqname,declname):
+                            UtilReflect.setField(resultlib,reqname,Util3.get(decl,"transform-t"))
                         else:
-                            field2 = reqname
-                            setattr(all_candidate_decls,(("_hx_" + field2) if ((field2 in python_Boot.keywords)) else (("_hx_" + field2) if (((((len(field2) > 2) and ((ord(field2[0]) == 95))) and ((ord(field2[1]) == 95))) and ((ord(field2[(len(field2) - 1)]) != 95)))) else field2)),[])
+                            UtilReflect.setField(all_candidate_decls,reqname,[])
         _g2 = 0
-        _g11 = python_Boot.fields(all_candidate_decls)
+        _g11 = UtilReflect.fields(all_candidate_decls)
         while (_g2 < len(_g11)):
             reqname1 = (_g11[_g2] if _g2 >= 0 and _g2 < len(_g11) else None)
             _g2 = (_g2 + 1)
-            candidate_decls = Util.get(all_candidate_decls,reqname1)
+            candidate_decls = Util3.get(all_candidate_decls,reqname1)
             _g21 = 0
             while (_g21 < len(dists)):
                 dist = (dists[_g21] if _g21 >= 0 and _g21 < len(dists) else None)
@@ -1104,15 +1104,15 @@ class Sutl:
                 while (_g3 < len(dist)):
                     decl1 = (dist[_g3] if _g3 >= 0 and _g3 < len(dist) else None)
                     _g3 = (_g3 + 1)
-                    if Util.isPrefix(reqname1,Util.get(decl1,"name","")):
+                    if Util3.isPrefix(reqname1,Util3.get(decl1,"name","")):
                         HxOverrides.push(candidate_decls, decl1)
         _g4 = 0
-        _g12 = python_Boot.fields(all_candidate_decls)
+        _g12 = UtilReflect.fields(all_candidate_decls)
         while (_g4 < len(_g12)):
             reqname2 = (_g12[_g4] if _g4 >= 0 and _g4 < len(_g12) else None)
             _g4 = (_g4 + 1)
-            candidate_decls1 = Util.get(all_candidate_decls,reqname2)
-            if Util.isTruthy(candidate_decls1):
+            candidate_decls1 = Util3.get(all_candidate_decls,reqname2)
+            if Util3.isTruthy(candidate_decls1):
                 def _hx_local_0():
                     _hx_local_7 = candidate_decls1
                     if Std._hx_is(_hx_local_7,list):
@@ -1123,9 +1123,8 @@ class Sutl:
                 candidate_decls_arr = _hx_local_0()
                 while (0 < len(candidate_decls_arr)):
                     candidate_decl = (candidate_decls_arr[0] if 0 < len(candidate_decls_arr) else None)
-                    Util.addObject(resultlib,Util.get(self._compilelib([candidate_decl],dists,resultlib,b),"lib"))
-                    value1 = Util.get(candidate_decl,"transform-t")
-                    setattr(resultlib,(("_hx_" + reqname2) if ((reqname2 in python_Boot.keywords)) else (("_hx_" + reqname2) if (((((len(reqname2) > 2) and ((ord(reqname2[0]) == 95))) and ((ord(reqname2[1]) == 95))) and ((ord(reqname2[(len(reqname2) - 1)]) != 95)))) else reqname2)),value1)
+                    Util.addObject(resultlib,Util3.get(self._compilelib([candidate_decl],dists,resultlib,b),"lib"))
+                    UtilReflect.setField(resultlib,reqname2,Util3.get(candidate_decl,"transform-t"))
                     break
         return _hx_AnonObject({'lib': resultlib})
 
@@ -1222,97 +1221,11 @@ Type._hx_class = Type
 class Util:
     _hx_class_name = "Util"
     __slots__ = ()
-    _hx_statics = ["isObject", "isArray", "isString", "isSequence", "isNumber", "isBool", "isTruthy", "isBuiltinEval", "isArrayBuiltinEval", "isStringBuiltinEval", "isEval", "isEval2", "isQuoteEval", "isDoubleQuoteEval", "isColonEval", "isDictTransform", "isListTransform", "getArrayBuiltinName", "get", "gettype", "MakeExcept", "deepEqual", "deepEqual2", "deepCopy", "shallowCopy", "addObject", "StringToArray", "SequenceToArray", "flatten", "loadcoredist", "isPrefix"]
-
-    @staticmethod
-    def isObject(obj):
-        return (Type.typeof(obj) == ValueType.TObject)
-
-    @staticmethod
-    def isArray(obj):
-        return (Type.getClass(obj) == list)
-
-    @staticmethod
-    def isString(obj):
-        return (Type.getClass(obj) == str)
-
-    @staticmethod
-    def isSequence(obj):
-        if (not Util.isArray(obj)):
-            return Util.isString(obj)
-        else:
-            return True
-
-    @staticmethod
-    def isNumber(obj):
-        ltype = Type.typeof(obj)
-        if (ltype != ValueType.TInt):
-            return (ltype == ValueType.TFloat)
-        else:
-            return True
-
-    @staticmethod
-    def isBool(obj):
-        return (Type.typeof(obj) == ValueType.TBool)
-
-    @staticmethod
-    def isTruthy(aObj):
-        retval = False
-        if Util.isObject(aObj):
-            retval = (len(python_Boot.fields(aObj)) > 0)
-        elif Util.isArray(aObj):
-            retval = (Reflect.field(aObj,"length") > 0)
-        elif Util.isString(aObj):
-            retval = (aObj != "")
-        elif Util.isNumber(aObj):
-            retval = (aObj != 0)
-        elif Util.isBool(aObj):
-            retval = aObj
-        else:
-            retval = (aObj is not None)
-        return retval
-
-    @staticmethod
-    def isBuiltinEval(obj):
-        if Util.isObject(obj):
-            return hasattr(obj,(("_hx_" + "&") if (("&" in python_Boot.keywords)) else (("_hx_" + "&") if (((((len("&") > 2) and ((ord("&"[0]) == 95))) and ((ord("&"[1]) == 95))) and ((ord("&"[(len("&") - 1)]) != 95)))) else "&")))
-        else:
-            return False
-
-    @staticmethod
-    def isArrayBuiltinEval(obj,b):
-        retval = Util.isArray(obj)
-        if retval:
-            arr = Util.SequenceToArray(obj)
-            retval = (len(arr) > 0)
-            if retval:
-                lopArr = arr[0:1]
-                lop = None
-                if (len(lopArr) > 0):
-                    lop = (lopArr[0] if 0 < len(lopArr) else None)
-                else:
-                    lop = None
-                retval = Util.isString(lop)
-                if retval:
-                    def _hx_local_0():
-                        _hx_local_0 = lop
-                        if Std._hx_is(_hx_local_0,str):
-                            _hx_local_0
-                        else:
-                            raise _HxException("Class cast error")
-                        return _hx_local_0
-                    lopStr = _hx_local_0()
-                    lopSignifier = ("" if ((0 >= len(lopStr))) else lopStr[0])
-                    lopBuiltinName = Util.getArrayBuiltinName(lopStr)
-                    if ((lopSignifier == "&") or ((lopSignifier == "^"))):
-                        retval = hasattr(b,(("_hx_" + lopBuiltinName) if ((lopBuiltinName in python_Boot.keywords)) else (("_hx_" + lopBuiltinName) if (((((len(lopBuiltinName) > 2) and ((ord(lopBuiltinName[0]) == 95))) and ((ord(lopBuiltinName[1]) == 95))) and ((ord(lopBuiltinName[(len(lopBuiltinName) - 1)]) != 95)))) else lopBuiltinName)))
-                    else:
-                        retval = False
-        return retval
+    _hx_statics = ["isStringBuiltinEval", "isArrayBuiltinEval", "getArrayBuiltinName", "gettype", "MakeExcept", "deepEqual", "deepEqual2", "deepCopy", "addObject", "StringToArray", "SequenceToArray", "flatten", "loadcoredist", "shallowCopy"]
 
     @staticmethod
     def isStringBuiltinEval(obj,b):
-        retval = Util.isString(obj)
+        retval = Util2.isString(obj)
         if retval:
             def _hx_local_0():
                 _hx_local_0 = obj
@@ -1325,47 +1238,37 @@ class Util:
         return retval
 
     @staticmethod
-    def isEval(obj):
-        if Util.isObject(obj):
-            return hasattr(obj,(("_hx_" + "!") if (("!" in python_Boot.keywords)) else (("_hx_" + "!") if (((((len("!") > 2) and ((ord("!"[0]) == 95))) and ((ord("!"[1]) == 95))) and ((ord("!"[(len("!") - 1)]) != 95)))) else "!")))
-        else:
-            return False
-
-    @staticmethod
-    def isEval2(obj):
-        if Util.isObject(obj):
-            return hasattr(obj,(("_hx_" + "!!") if (("!!" in python_Boot.keywords)) else (("_hx_" + "!!") if (((((len("!!") > 2) and ((ord("!!"[0]) == 95))) and ((ord("!!"[1]) == 95))) and ((ord("!!"[(len("!!") - 1)]) != 95)))) else "!!")))
-        else:
-            return False
-
-    @staticmethod
-    def isQuoteEval(obj):
-        if Util.isObject(obj):
-            return hasattr(obj,(("_hx_" + "'") if (("'" in python_Boot.keywords)) else (("_hx_" + "'") if (((((len("'") > 2) and ((ord("'"[0]) == 95))) and ((ord("'"[1]) == 95))) and ((ord("'"[(len("'") - 1)]) != 95)))) else "'")))
-        else:
-            return False
-
-    @staticmethod
-    def isDoubleQuoteEval(obj):
-        if Util.isObject(obj):
-            return hasattr(obj,(("_hx_" + "''") if (("''" in python_Boot.keywords)) else (("_hx_" + "''") if (((((len("''") > 2) and ((ord("''"[0]) == 95))) and ((ord("''"[1]) == 95))) and ((ord("''"[(len("''") - 1)]) != 95)))) else "''")))
-        else:
-            return False
-
-    @staticmethod
-    def isColonEval(obj):
-        if Util.isObject(obj):
-            return hasattr(obj,(("_hx_" + ":") if ((":" in python_Boot.keywords)) else (("_hx_" + ":") if (((((len(":") > 2) and ((ord(":"[0]) == 95))) and ((ord(":"[1]) == 95))) and ((ord(":"[(len(":") - 1)]) != 95)))) else ":")))
-        else:
-            return False
-
-    @staticmethod
-    def isDictTransform(obj):
-        return Util.isObject(obj)
-
-    @staticmethod
-    def isListTransform(obj):
-        return Util.isArray(obj)
+    def isArrayBuiltinEval(obj,b):
+        retval = Util2.isArray(obj)
+        if retval:
+            arr = Util.SequenceToArray(obj)
+            retval = (len(arr) > 0)
+            if retval:
+                lopArr = arr[0:1]
+                lop = None
+                if (len(lopArr) > 0):
+                    lop = (lopArr[0] if 0 < len(lopArr) else None)
+                else:
+                    lop = None
+                retval = Util2.isString(lop)
+                if retval:
+                    def _hx_local_0():
+                        _hx_local_0 = lop
+                        if Std._hx_is(_hx_local_0,str):
+                            _hx_local_0
+                        else:
+                            raise _HxException("Class cast error")
+                        return _hx_local_0
+                    lopStr = _hx_local_0()
+                    if (0 < len(lopStr)):
+                        lopStr[0]
+                    lopSignifier = ("" if ((0 >= len(lopStr))) else lopStr[0])
+                    lopBuiltinName = Util.getArrayBuiltinName(lopStr)
+                    if ((lopSignifier == "&") or ((lopSignifier == "^"))):
+                        retval = UtilReflect.hasField(b,lopBuiltinName)
+                    else:
+                        retval = False
+        return retval
 
     @staticmethod
     def getArrayBuiltinName(aOp):
@@ -1375,25 +1278,16 @@ class Util:
             return None
 
     @staticmethod
-    def get(obj,key,_hx_def = None):
-        retval = None
-        if Util.isObject(obj):
-            retval = Reflect.field(obj,key)
-        if (retval is None):
-            retval = _hx_def
-        return retval
-
-    @staticmethod
     def gettype(item):
-        if Util.isObject(item):
+        if Util2.isObject(item):
             return "map"
-        elif Util.isArray(item):
+        elif Util2.isArray(item):
             return "list"
-        elif Util.isString(item):
+        elif Util2.isString(item):
             return "string"
-        elif Util.isNumber(item):
+        elif Util2.isNumber(item):
             return "number"
-        elif Util.isBool(item):
+        elif Util2.isBool(item):
             return "boolean"
         elif (item is None):
             return "null"
@@ -1428,8 +1322,8 @@ class Util:
                 raise _HxException(Util.MakeExcept(((((((("Different types: type(" + Std.string(aObj1)) + ")=") + ("null" if obj1Type is None else obj1Type)) + ", type(") + Std.string(aObj2)) + ")=") + ("null" if obj2Type is None else obj2Type)),path))
             if retval:
                 if (obj1Type == "map"):
-                    obj1Fields = python_Boot.fields(aObj1)
-                    obj2Fields = python_Boot.fields(aObj2)
+                    obj1Fields = UtilReflect.fields(aObj1)
+                    obj2Fields = UtilReflect.fields(aObj2)
                     retval = (len(obj1Fields) == len(obj2Fields))
                     if (not retval):
                         raise _HxException(Util.MakeExcept(((((((("Keys don't match: fields(" + Std.string(aObj1)) + ")=") + Std.string(obj1Fields)) + ", fields(") + Std.string(aObj2)) + ")=") + Std.string(obj2Fields)),path))
@@ -1439,8 +1333,8 @@ class Util:
                             obj1Field = (obj1Fields[_g] if _g >= 0 and _g < len(obj1Fields) else None)
                             _g = (_g + 1)
                             path.append(obj1Field)
-                            if hasattr(aObj2,(("_hx_" + obj1Field) if ((obj1Field in python_Boot.keywords)) else (("_hx_" + obj1Field) if (((((len(obj1Field) > 2) and ((ord(obj1Field[0]) == 95))) and ((ord(obj1Field[1]) == 95))) and ((ord(obj1Field[(len(obj1Field) - 1)]) != 95)))) else obj1Field))):
-                                retval = Util.deepEqual2(Reflect.field(aObj1,obj1Field),Reflect.field(aObj2,obj1Field),path,(maxdepth - 1))
+                            if UtilReflect.hasField(aObj2,obj1Field):
+                                retval = Util.deepEqual2(UtilReflect.field(aObj1,obj1Field),UtilReflect.field(aObj2,obj1Field),path,(maxdepth - 1))
                             else:
                                 retval = False
                             if (len(path) != 0):
@@ -1482,13 +1376,12 @@ class Util:
         objType = Util.gettype(aObj)
         if (objType == "map"):
             retval = _hx_AnonObject({})
-            objFields = python_Boot.fields(aObj)
+            objFields = UtilReflect.fields(aObj)
             _g = 0
             while (_g < len(objFields)):
                 objField = (objFields[_g] if _g >= 0 and _g < len(objFields) else None)
                 _g = (_g + 1)
-                value = Util.deepCopy(Reflect.field(aObj,objField))
-                setattr(retval,(("_hx_" + objField) if ((objField in python_Boot.keywords)) else (("_hx_" + objField) if (((((len(objField) > 2) and ((ord(objField[0]) == 95))) and ((ord(objField[1]) == 95))) and ((ord(objField[(len(objField) - 1)]) != 95)))) else objField)),value)
+                UtilReflect.setField(retval,objField,Util.deepCopy(UtilReflect.field(aObj,objField)))
         elif (objType == "list"):
             retval = []
             _g1 = 0
@@ -1509,52 +1402,19 @@ class Util:
         return retval
 
     @staticmethod
-    def shallowCopy(aObj):
-        retval = None
-        objType = Util.gettype(aObj)
-        if (objType == "map"):
-            retval = _hx_AnonObject({})
-            objFields = python_Boot.fields(aObj)
-            _g = 0
-            while (_g < len(objFields)):
-                objField = (objFields[_g] if _g >= 0 and _g < len(objFields) else None)
-                _g = (_g + 1)
-                value = Reflect.field(aObj,objField)
-                setattr(retval,(("_hx_" + objField) if ((objField in python_Boot.keywords)) else (("_hx_" + objField) if (((((len(objField) > 2) and ((ord(objField[0]) == 95))) and ((ord(objField[1]) == 95))) and ((ord(objField[(len(objField) - 1)]) != 95)))) else objField)),value)
-        elif (objType == "list"):
-            retval = []
-            _g1 = 0
-            def _hx_local_0():
-                _hx_local_1 = aObj
-                if Std._hx_is(_hx_local_1,list):
-                    _hx_local_1
-                else:
-                    raise _HxException("Class cast error")
-                return _hx_local_1
-            _g11 = _hx_local_0()
-            while (_g1 < len(_g11)):
-                elem = (_g11[_g1] if _g1 >= 0 and _g1 < len(_g11) else None)
-                _g1 = (_g1 + 1)
-                Reflect.field(retval,"push")(elem)
-        else:
-            retval = aObj
-        return retval
-
-    @staticmethod
     def addObject(aBase,aAdd):
-        if (Util.isObject(aBase) and Util.isObject(aAdd)):
+        if (Util2.isObject(aBase) and Util2.isObject(aAdd)):
             _g = 0
-            _g1 = python_Boot.fields(aAdd)
+            _g1 = UtilReflect.fields(aAdd)
             while (_g < len(_g1)):
                 key = (_g1[_g] if _g >= 0 and _g < len(_g1) else None)
                 _g = (_g + 1)
-                value = Reflect.field(aAdd,key)
-                setattr(aBase,(("_hx_" + key) if ((key in python_Boot.keywords)) else (("_hx_" + key) if (((((len(key) > 2) and ((ord(key[0]) == 95))) and ((ord(key[1]) == 95))) and ((ord(key[(len(key) - 1)]) != 95)))) else key)),value)
+                UtilReflect.setField(aBase,key,UtilReflect.field(aAdd,key))
 
     @staticmethod
     def StringToArray(aStrObj):
         retval = None
-        if Util.isString(aStrObj):
+        if Util2.isString(aStrObj):
             retval = []
             def _hx_local_0():
                 _hx_local_0 = aStrObj
@@ -1576,7 +1436,7 @@ class Util:
     @staticmethod
     def SequenceToArray(aObj):
         retval = None
-        if Util.isArray(aObj):
+        if Util2.isArray(aObj):
             def _hx_local_0():
                 _hx_local_0 = aObj
                 if Std._hx_is(_hx_local_0,list):
@@ -1585,7 +1445,7 @@ class Util:
                     raise _HxException("Class cast error")
                 return _hx_local_0
             retval = _hx_local_0()
-        elif Util.isString(aObj):
+        elif Util2.isString(aObj):
             retval = Util.StringToArray(aObj)
         return retval
 
@@ -1596,7 +1456,7 @@ class Util:
         while (_g < len(lst)):
             elem = (lst[_g] if _g >= 0 and _g < len(lst) else None)
             _g = (_g + 1)
-            if Util.isArray(elem):
+            if Util2.isArray(elem):
                 retval = (retval + elem)
             else:
                 retval.append(elem)
@@ -1607,9 +1467,187 @@ class Util:
         return Sutlcore.get()
 
     @staticmethod
+    def shallowCopy(aObj):
+        retval = None
+        objType = Util.gettype(aObj)
+        if (objType == "map"):
+            retval = Reflect.copy(aObj)
+        elif (objType == "list"):
+            retval = []
+            _g = 0
+            def _hx_local_0():
+                _hx_local_0 = aObj
+                if Std._hx_is(_hx_local_0,list):
+                    _hx_local_0
+                else:
+                    raise _HxException("Class cast error")
+                return _hx_local_0
+            _g1 = _hx_local_0()
+            while (_g < len(_g1)):
+                elem = (_g1[_g] if _g >= 0 and _g < len(_g1) else None)
+                _g = (_g + 1)
+                Reflect.field(retval,"push")(elem)
+        else:
+            retval = aObj
+        return retval
+Util._hx_class = Util
+
+
+class Util2:
+    _hx_class_name = "Util2"
+    __slots__ = ()
+    _hx_statics = ["isObject", "isArray", "isString", "isSequence", "isInt", "isNumber", "isBool"]
+
+    @staticmethod
+    def isObject(obj):
+        return (Type.typeof(obj) == ValueType.TObject)
+
+    @staticmethod
+    def isArray(obj):
+        return Std._hx_is(obj,list)
+
+    @staticmethod
+    def isString(obj):
+        return (Type.getClass(obj) == str)
+
+    @staticmethod
+    def isSequence(obj):
+        if (not Util2.isArray(obj)):
+            return Util2.isString(obj)
+        else:
+            return True
+
+    @staticmethod
+    def isInt(obj):
+        return (Type.typeof(obj) == ValueType.TInt)
+
+    @staticmethod
+    def isNumber(obj):
+        ltype = Type.typeof(obj)
+        if (ltype != ValueType.TInt):
+            return (ltype == ValueType.TFloat)
+        else:
+            return True
+
+    @staticmethod
+    def isBool(obj):
+        return (Type.typeof(obj) == ValueType.TBool)
+Util2._hx_class = Util2
+
+
+class Util3:
+    _hx_class_name = "Util3"
+    __slots__ = ()
+    _hx_statics = ["isBuiltinEval", "isEval", "isEval2", "isQuoteEval", "isDoubleQuoteEval", "isColonEval", "isDictTransform", "isListTransform", "isTruthy", "isPrefix", "get"]
+
+    @staticmethod
+    def isBuiltinEval(obj):
+        if Util2.isObject(obj):
+            return UtilReflect.hasField(obj,"&")
+        else:
+            return False
+
+    @staticmethod
+    def isEval(obj):
+        if Util2.isObject(obj):
+            return UtilReflect.hasField(obj,"!")
+        else:
+            return False
+
+    @staticmethod
+    def isEval2(obj):
+        if Util2.isObject(obj):
+            return UtilReflect.hasField(obj,"!!")
+        else:
+            return False
+
+    @staticmethod
+    def isQuoteEval(obj):
+        if Util2.isObject(obj):
+            return UtilReflect.hasField(obj,"'")
+        else:
+            return False
+
+    @staticmethod
+    def isDoubleQuoteEval(obj):
+        if Util2.isObject(obj):
+            return UtilReflect.hasField(obj,"''")
+        else:
+            return False
+
+    @staticmethod
+    def isColonEval(obj):
+        if Util2.isObject(obj):
+            return UtilReflect.hasField(obj,":")
+        else:
+            return False
+
+    @staticmethod
+    def isDictTransform(obj):
+        return Util2.isObject(obj)
+
+    @staticmethod
+    def isListTransform(obj):
+        return Util2.isArray(obj)
+
+    @staticmethod
+    def isTruthy(aObj):
+        retval = False
+        if Util2.isArray(aObj):
+            retval = (Reflect.field(aObj,"length") > 0)
+        elif Util2.isString(aObj):
+            retval = (aObj != "")
+        elif Util2.isNumber(aObj):
+            retval = (aObj != 0)
+        elif Util2.isBool(aObj):
+            retval = aObj
+        elif Util2.isObject(aObj):
+            retval = (len(UtilReflect.fields(aObj)) > 0)
+        else:
+            retval = (aObj is not None)
+        return retval
+
+    @staticmethod
     def isPrefix(str1,str2):
         return (str2.find(str1) == 0)
-Util._hx_class = Util
+
+    @staticmethod
+    def get(obj,key,_hx_def = None):
+        retval = None
+        if Util2.isObject(obj):
+            retval = UtilReflect.field(obj,key)
+        if (retval is None):
+            retval = _hx_def
+        return retval
+Util3._hx_class = Util3
+
+
+class UtilReflect:
+    _hx_class_name = "UtilReflect"
+    __slots__ = ()
+    _hx_statics = ["fields", "hasField", "field", "setField", "deleteField"]
+
+    @staticmethod
+    def fields(obj):
+        return python_Boot.fields(obj)
+
+    @staticmethod
+    def hasField(obj,fieldname):
+        return hasattr(obj,(("_hx_" + fieldname) if ((fieldname in python_Boot.keywords)) else (("_hx_" + fieldname) if (((((len(fieldname) > 2) and ((ord(fieldname[0]) == 95))) and ((ord(fieldname[1]) == 95))) and ((ord(fieldname[(len(fieldname) - 1)]) != 95)))) else fieldname)))
+
+    @staticmethod
+    def field(obj,fieldname):
+        return Reflect.field(obj,fieldname)
+
+    @staticmethod
+    def setField(obj,fieldname,value):
+        setattr(obj,(("_hx_" + fieldname) if ((fieldname in python_Boot.keywords)) else (("_hx_" + fieldname) if (((((len(fieldname) > 2) and ((ord(fieldname[0]) == 95))) and ((ord(fieldname[1]) == 95))) and ((ord(fieldname[(len(fieldname) - 1)]) != 95)))) else fieldname)),value)
+        return
+
+    @staticmethod
+    def deleteField(obj,fieldname):
+        return Reflect.deleteField(obj,fieldname)
+UtilReflect._hx_class = UtilReflect
 
 
 class haxe_IMap:
