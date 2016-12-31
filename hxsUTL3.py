@@ -485,7 +485,7 @@ class Sutl:
                                 litem = (None if ((len(lstack) == 0)) else lstack.pop())
                                 if Util2.isObject(litem):
                                     _g2 = 0
-                                    _g3 = UtilReflect.fields(litem)
+                                    _g3 = Util.sort(UtilReflect.fields(litem))
                                     while (_g2 < len(_g3)):
                                         lattrib = (_g3[_g2] if _g2 >= 0 and _g2 < len(_g3) else None)
                                         _g2 = (_g2 + 1)
@@ -771,7 +771,7 @@ class Sutl:
             _g3 = (_g3 + 1)
             def _hx_local_39(parentscope30,scope30,l30,src30,tt30,b34,h30):
                 return True
-            UtilReflect.setField(functions,("has" + Std.string(fieldname)),_hx_local_39)
+            UtilReflect.setField(functions,("has" + ("null" if fieldname is None else fieldname)),_hx_local_39)
         return functions
 
     def logenter(self,msg,s,t,h):
@@ -1221,7 +1221,7 @@ Type._hx_class = Type
 class Util:
     _hx_class_name = "Util"
     __slots__ = ()
-    _hx_statics = ["isStringBuiltinEval", "isArrayBuiltinEval", "getArrayBuiltinName", "gettype", "MakeExcept", "deepEqual", "deepEqual2", "deepCopy", "addObject", "StringToArray", "SequenceToArray", "flatten", "loadcoredist", "shallowCopy"]
+    _hx_statics = ["isStringBuiltinEval", "isArrayBuiltinEval", "getArrayBuiltinName", "gettype", "MakeExcept", "deepEqual", "deepEqual2", "deepCopy", "addObject", "StringToArray", "SequenceToArray", "flatten", "loadcoredist", "shallowCopy", "sort"]
 
     @staticmethod
     def isStringBuiltinEval(obj,b):
@@ -1490,6 +1490,13 @@ class Util:
         else:
             retval = aObj
         return retval
+
+    @staticmethod
+    def sort(strings):
+        def _hx_local_0(a,b):
+            return Reflect.compare(a,b)
+        strings.sort(key= python_lib_Functools.cmp_to_key(_hx_local_0))
+        return strings
 Util._hx_class = Util
 
 
